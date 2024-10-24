@@ -1,4 +1,4 @@
-interface PlayerRegistrationRequest {
+export interface PlayerRegistrationRequest {
   type: 'reg';
   data: {
     name: string;
@@ -7,7 +7,7 @@ interface PlayerRegistrationRequest {
   id: number;
 }
 
-interface PlayerRegistrationResponse {
+export interface PlayerRegistrationResponse {
   type: 'reg';
   data: {
     name: string;
@@ -17,7 +17,7 @@ interface PlayerRegistrationResponse {
   };
   id: number;
 }
-interface UpdateWinnersResponse {
+export interface UpdateWinnersResponse {
   type: 'update_winners';
   data: Array<{
     name: string;
@@ -25,13 +25,13 @@ interface UpdateWinnersResponse {
   }>;
   id: number;
 }
-interface CreateRoomRequest {
+export interface CreateRoomRequest {
   type: 'create_room';
   data: string; // пустая строка
   id: number;
 }
 
-interface AddUserToRoomRequest {
+export interface AddUserToRoomRequest {
   type: 'add_user_to_room';
   data: {
     indexRoom: number | string;
@@ -39,7 +39,7 @@ interface AddUserToRoomRequest {
   id: number;
 }
 
-interface CreateGameResponse {
+export interface CreateGameResponse {
   type: 'create_game';
   data: {
     idGame: number | string;
@@ -48,7 +48,7 @@ interface CreateGameResponse {
   id: number;
 }
 
-interface UpdateRoomResponse {
+export interface UpdateRoomResponse {
   type: 'update_room';
   data: Array<{
     roomId: number | string;
@@ -59,7 +59,7 @@ interface UpdateRoomResponse {
   }>;
   id: number;
 }
-interface AddShipsRequest {
+export interface AddShipsRequest {
   type: 'add_ships';
   data: {
     gameId: number | string;
@@ -76,7 +76,7 @@ interface AddShipsRequest {
   };
   id: number;
 }
-interface StartGameResponse {
+export interface StartGameResponse {
   type: 'start_game';
   data: {
     ships: Array<{
@@ -92,7 +92,7 @@ interface StartGameResponse {
   };
   id: number;
 }
-interface AttackRequest {
+export interface AttackRequest {
   type: 'attack';
   data: {
     gameId: number | string;
@@ -103,7 +103,7 @@ interface AttackRequest {
   id: number;
 }
 
-interface AttackResponse {
+export interface AttackResponse {
   type: 'attack';
   data: {
     position: {
@@ -115,7 +115,7 @@ interface AttackResponse {
   };
   id: number;
 }
-interface RandomAttackRequest {
+export interface RandomAttackRequest {
   type: 'randomAttack';
   data: {
     gameId: number | string;
@@ -123,17 +123,21 @@ interface RandomAttackRequest {
   };
   id: number;
 }
-interface TurnResponse {
+export interface TurnResponse {
   type: 'turn';
   data: {
     currentPlayer: number | string;
   };
   id: number;
 }
-interface FinishGameResponse {
+export interface FinishGameResponse {
   type: 'finish';
   data: {
     winPlayer: number | string;
   };
   id: number;
+}
+export interface ErrorResponse {
+  type: 'error';
+  message: string;
 }

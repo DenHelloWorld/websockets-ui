@@ -1,17 +1,18 @@
 import { WebSocketRequest } from '../models/req-res.types';
 import { WebSocket } from 'ws';
-import playerRegistration, { registeredPlayers } from './playerRegistration';
-import { createRoom } from './room';
+import playerRegistration from './playerRegistration';
+import { registeredPlayers } from '../db/db';
+
 const commander = (ws: WebSocket, message: WebSocketRequest, uuid: string) => {
   switch (message.type) {
     case 'reg':
       playerRegistration(ws, message, uuid);
-      console.log(registeredPlayers);
+      console.log('reg', registeredPlayers);
       break;
 
     case 'create_room':
       console.log('create_room', message);
-      createRoom(ws, message, uuid);
+
       break;
 
     case 'add_user_to_room':

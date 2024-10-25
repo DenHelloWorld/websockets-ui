@@ -1,18 +1,16 @@
 import { WebSocketRequest } from '../models/req-res.types';
 import { WebSocket } from 'ws';
-import handlePlayerRegistration from './handlePlayerRegistration';
-const dirigueur = (ws: WebSocket, message: WebSocketRequest, uuid: string) => {
+import playerRegistration from './playerRegistration';
+import { createRoom } from './room';
+const commander = (ws: WebSocket, message: WebSocketRequest, uuid: string) => {
   switch (message.type) {
     case 'reg':
-      console.log('reg', uuid);
-      console.log('reg', message);
-
-      handlePlayerRegistration(ws, message, uuid);
+      playerRegistration(ws, message, uuid);
       break;
 
     case 'create_room':
       console.log('create_room', message);
-      // handleCreateRoom(ws, message);
+      createRoom(ws, message, uuid);
       break;
 
     case 'add_user_to_room':
@@ -41,4 +39,4 @@ const dirigueur = (ws: WebSocket, message: WebSocketRequest, uuid: string) => {
   }
 };
 
-export default dirigueur;
+export default commander;

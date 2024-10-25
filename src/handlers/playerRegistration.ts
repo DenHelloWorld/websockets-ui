@@ -1,9 +1,9 @@
 import { WebSocketRequest } from '../models/req-res.types';
 import { WebSocket } from 'ws';
 
-let registeredPlayers: { [key: string]: { name: string; password: string } } = {};
+export const registeredPlayers: { [key: string]: { name: string; password: string } } = {};
 
-const handlePlayerRegistration = (ws: WebSocket, message: WebSocketRequest, connectionId: string) => {
+const playerRegistration = (ws: WebSocket, message: WebSocketRequest, connectionId: string) => {
   if (message.type === 'reg') {
     const { name, password } = message.data;
 
@@ -54,4 +54,4 @@ const handlePlayerRegistration = (ws: WebSocket, message: WebSocketRequest, conn
   }
 };
 
-export default handlePlayerRegistration;
+export default playerRegistration;

@@ -28,7 +28,7 @@ const playerRegistration = (ws: WebSocket, message: WebSocketRequest, connection
       );
     } else {
       const index = connectionId;
-      registeredPlayers[name] = { name, password };
+      registeredPlayers[connectionId] = { name, password };
 
       ws.send(
         JSON.stringify({

@@ -1,10 +1,13 @@
 import { WebSocketRequest } from '../models/req-res.types';
-
-const websocketHandler = (message: WebSocketRequest) => {
+import { WebSocket } from 'ws';
+import handlePlayerRegistration from './handlePlayerRegistration';
+const dirigueur = (ws: WebSocket, message: WebSocketRequest, uuid: string) => {
   switch (message.type) {
     case 'reg':
+      console.log('reg', uuid);
       console.log('reg', message);
-      // handlePlayerRegistration(ws, message);
+
+      handlePlayerRegistration(ws, message, uuid);
       break;
 
     case 'create_room':
@@ -33,8 +36,9 @@ const websocketHandler = (message: WebSocketRequest) => {
       break;
 
     default:
+      console.log(ws);
       console.error('Unknown request type:', message);
   }
 };
 
-export default websocketHandler;
+export default dirigueur;

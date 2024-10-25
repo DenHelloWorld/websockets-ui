@@ -1,6 +1,7 @@
 import { WebSocketRequest } from '../models/req-res.types';
 import { WebSocket } from 'ws';
 
+const usedNames = new Set<string>();
 export const registeredPlayers: { [key: string]: { name: string; password: string } } = {};
 
 const playerRegistration = (ws: WebSocket, message: WebSocketRequest, connectionId: string) => {
@@ -18,7 +19,7 @@ const playerRegistration = (ws: WebSocket, message: WebSocketRequest, connection
       return;
     }
 
-    if (registeredPlayers[name]) {
+    if (usedNames.has(name)) {
       ws.send(
         JSON.stringify({
           type: 'reg',
@@ -29,7 +30,7 @@ const playerRegistration = (ws: WebSocket, message: WebSocketRequest, connection
     } else {
       const index = connectionId;
       registeredPlayers[connectionId] = { name, password };
-
+      usedNames.add(name);
       ws.send(
         JSON.stringify({
           type: 'reg',

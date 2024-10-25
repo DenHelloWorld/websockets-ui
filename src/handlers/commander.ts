@@ -1,11 +1,12 @@
 import { WebSocketRequest } from '../models/req-res.types';
 import { WebSocket } from 'ws';
-import playerRegistration from './playerRegistration';
+import playerRegistration, { registeredPlayers } from './playerRegistration';
 import { createRoom } from './room';
 const commander = (ws: WebSocket, message: WebSocketRequest, uuid: string) => {
   switch (message.type) {
     case 'reg':
       playerRegistration(ws, message, uuid);
+      console.log(registeredPlayers);
       break;
 
     case 'create_room':
@@ -15,7 +16,7 @@ const commander = (ws: WebSocket, message: WebSocketRequest, uuid: string) => {
 
     case 'add_user_to_room':
       console.log('add_user_to_room', message);
-      // handleAddUserToRoom(ws, message);
+      // addUserToRoom(ws, message, uuid);
       break;
 
     case 'add_ships':

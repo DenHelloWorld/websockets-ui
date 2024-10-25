@@ -13,6 +13,7 @@ export interface Room {
 }
 
 let rooms: { [key: string]: Room } = {};
+let availableRooms: { [key: string]: Room } = { ...rooms };
 // Автоматически добавлять юзера, который вызвал 'create_room'
 export const createRoom = (ws: WebSocket, message: CreateRoomRequest, uuid: string) => {
   if (message.type === 'create_room' && message.data === '') {
@@ -28,77 +29,104 @@ export const createRoom = (ws: WebSocket, message: CreateRoomRequest, uuid: stri
 
     rooms[roomId].users.push(user);
 
-    ws.send(
-      JSON.stringify({
-        type: 'update_room',
-        data: JSON.stringify([
-          {
-            roomId: roomId,
-            roomUsers: rooms[roomId].users,
-          },
-        ]),
-        id: message.id,
-      }),
-    );
+    updateRoom(ws, roomId, rooms[roomId].users);
 
     console.log(`Room created with ID: ${roomId}`);
-  } else {
-    ws.send(
-      JSON.stringify({
-        type: 'update_room',
-        data: JSON.stringify([
-          {
-            roomId: null,
-            roomUsers: [],
-          },
-        ]),
-        id: message.id,
-      }),
-    );
   }
 };
 
-export const updateRoom = (ws: WebSocket, messageId: number) => {
-  const availableRooms = Object.keys(rooms).map(roomId => ({
-    roomId,
-    roomUsers: rooms[roomId].users,
-  }));
-
+export const updateRoom = (ws: WebSocket, roomId: string, roomUsers: User[]) => {
   ws.send(
     JSON.stringify({
       type: 'update_room',
-      data: JSON.stringify(availableRooms),
-      id: messageId,
+      data: JSON.stringify([
+        {
+          roomId: roomId,
+          roomUsers: rooms[roomId].users,
+        },
+      ]),
+      id: 0,
     }),
   );
 };
 
-// export const addUserToRoom = (ws: WebSocket, message: AddUserToRoomRequest, connectionId: string) => {
-//   const room = rooms[message.data.indexRoom];
+export const addUserToRoom = (
+  ws: WebSocket,
+  message: { type: 'add_user_to_room'; data: { indexRoom: string }; id: number },
+  uuid: string,
+) => {
+  const { indexRoom } = message.data;
 
-//   if (room) {
-//     room.users.push({ index: connectionId });
+  if (!rooms[indexRoom]) {
+    // Если комната не существует
+    ws.send(
+      JSON.stringify({
+        type: 'add_user_to_room',
+        data: { error: true, errorText: 'Room not found' },
+        id: message.id,
+      }),
+    );
+    return;
+  }
 
-//     if (room.users.length === 2) {
-//       const idGame = randomUUID();
-//       room.users.forEach(user => {
-//         ws.send(
-//           JSON.stringify({
-//             type: 'create_game',
-//             data: JSON.stringify({ idGame, idPlayer: user.index }),
-//             id: message.id,
-//           }),
-//         );
-//       });
-//       delete rooms[message.data.indexRoom];
-//     }
-//   } else {
-//     ws.send(
-//       JSON.stringify({
-//         type: 'add_user_to_room',
-//         data: JSON.stringify({ error: true, errorText: 'Room does not exist' }),
-//         id: message.id,
-//       }),
-//     );
-//   }
-// };
+  const room = rooms[indexRoom];
+  if (room.users.length >= 2) {
+    // Если комната уже заполнена
+    ws.send(
+      JSON.stringify({
+        type: 'add_user_to_room',
+        data: { error: true, errorText: 'Room is full' },
+        id: message.id,
+      }),
+    );
+    return;
+  }
+
+  // Получаем имя пользователя по UUID
+  const userName = registeredPlayers[uuid]?.name || 'Unknown Player';
+  const user: User = {
+    index: uuid,
+    name: userName,
+  };
+
+  // Добавляем пользователя в комнату
+  room.users.push(user);
+
+  // Если комната теперь заполнена, удаляем её из списка доступных
+  if (room.users.length === 2) {
+    delete availableRooms[indexRoom];
+
+    // Отправляем сообщение о начале игры обоим пользователям в комнате
+    room.users.forEach(userInRoom => {
+      ws.send(
+        JSON.stringify({
+          type: 'create_game',
+          data: {
+            idGame: indexRoom,
+            idPlayer: userInRoom.index,
+          },
+          id: message.id,
+        }),
+      );
+    });
+  } else {
+    // Уведомляем всех в комнате об обновлении её состояния
+    room.users.forEach(userInRoom => {
+      ws.send(
+        JSON.stringify({
+          type: 'update_room',
+          data: [
+            {
+              roomId: indexRoom,
+              roomUsers: room.users,
+            },
+          ],
+          id: message.id,
+        }),
+      );
+    });
+  }
+
+  console.log(`User ${userName} added to room with ID: ${indexRoom}`);
+};
+

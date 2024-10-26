@@ -3,7 +3,7 @@ import { safeJsonParse } from '../utils/safeJsonParse';
 import validateObjectWithType from '../utils/validateObjectWithType';
 import commander from './commander';
 import { RawData, WebSocket } from 'ws';
-const handleMessage = (ws: WebSocket, data: RawData, uuid: string) => {
+const handleMessage = async (ws: WebSocket, data: RawData, uuid: string) => {
   let parsedData = parseJsonOrRawData(data);
 
   if (!validateObjectWithType(parsedData)) {

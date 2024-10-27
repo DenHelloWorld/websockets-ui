@@ -1,9 +1,10 @@
 import { WebSocketRequest } from '../models/req-res.types';
 import { WebSocket } from 'ws';
-import handleCreateRoom from './createRoom';
+import handleCreateRoom from './handleCreateRoom';
 import handleAddUserToRoom from './handleAddUserToRoom';
 import handleReg from './handleReg';
 import handleAddShips from './handleAddShips';
+import handleAttack from './handleAttack';
 
 const commander = (ws: WebSocket, message: WebSocketRequest, connectionId: string) => {
   switch (message.type) {
@@ -21,6 +22,9 @@ const commander = (ws: WebSocket, message: WebSocketRequest, connectionId: strin
 
     case 'add_ships':
       handleAddShips(ws, message, connectionId);
+      break;
+    case 'attack':
+      handleAttack(ws, message, connectionId);
       break;
 
     default:

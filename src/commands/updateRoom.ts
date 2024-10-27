@@ -1,7 +1,7 @@
 import { rooms } from '../db/db';
 import { WebSocketServer, WebSocket } from 'ws';
 
-const updateRoom = async (wsServer: WebSocketServer) => {
+const updateRoom = (wsServer: WebSocketServer) => {
   const roomData = Object.keys(rooms).map(roomId => ({
     roomId,
     roomUsers: rooms[roomId].users.map(user => ({

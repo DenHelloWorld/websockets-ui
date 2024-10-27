@@ -19,16 +19,16 @@ const handleAddUserToRoom = (message: WebSocketRequest, connectionId: string) =>
   }
   const player = findUserByConnectionId(connectionId);
   if (player) {
-    room.users.push({ name: player.name, index: connectionId });
-    console.log(`Added user to room ${indexRoom}:`, JSON.stringify(room, null, 2));
-
-    if (room.users.length === 2) {
+    if (room.users[0].name !== player.name) {
+      room.users.push({ name: player.name, index: connectionId });
       const gameId = randomUUID();
       createGame(room, gameId);
       delete rooms[indexRoom];
+    } else {
+      console.warn(`Player with name ${player.name} already in room`);
     }
   } else {
-    console.error(`Player with connectionId ${connectionId} does not exist`);
+    console.warn(`Player with connectionId ${connectionId} does not exist`);
   }
 };
 

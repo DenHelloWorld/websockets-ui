@@ -9,6 +9,11 @@ const handleCreateRoom = (message: WebSocketRequest, connectionId: string) => {
     const user = findUserByConnectionId(connectionId);
 
     if (user) {
+      if (user.room) {
+        delete rooms[user.room];
+      }
+
+      user.room = newRoomId;
       rooms[newRoomId] = {
         users: [
           {
@@ -17,7 +22,12 @@ const handleCreateRoom = (message: WebSocketRequest, connectionId: string) => {
           },
         ],
       };
+
+      console.log(`User ${user.name} created and joined room ${newRoomId}`);
+    } else {
+      console.warn(`User with connectionId ${connectionId} not found.`);
     }
   }
 };
+
 export default handleCreateRoom;

@@ -1,35 +1,40 @@
-import { clients } from './../db/db';
-import { games } from '../db/db';
+import { clients, games } from '../db/db';
+
+import findUserByIndexPlayer from '../utils/findUserByIndexPlayer';
 
 const startGame = (gameId: string | number) => {
   const game = games[gameId];
 
-  game.startGameData = {
-    players: Object.keys(game.addShipsData?.ships || {}),
-    isReadyToStart: true,
-    currentTurn: Object.keys(game.addShipsData?.ships || [])[0],
-  };
-  console.log(`Game ${gameId} is ready to start. Current turn: ${JSON.stringify(game.startGameData)}`);
+  if (!game) {
+    console.warn(`Game with ID ${gameId} does not exist.`);
+    return;
+  }
 
-  game.startGameData.players.forEach(connectionId => {
-    // const player = findUserByConnectionId(connectionId);
-    const client = clients.get(connectionId);
-    if (client) {
-      // console.log('player', player?.name);
-      client.send(
-        JSON.stringify({
+  const players = Object.keys(game.addShipsData?.ships || {});
+
+  players.forEach(indexPlayer => {
+    const player = findUserByIndexPlayer(indexPlayer);
+    if (player) {
+      console.log('playerName', indexPlayer);
+      const client = clients.get(player.connectionId);
+      if (client) {
+        const ships = game.addShipsData?.ships[indexPlayer];
+
+        const message = {
           type: 'start_game',
           data: JSON.stringify({
-            ships: game.addShipsData?.ships[connectionId],
-            currentPlayerIndex: game.startGameData?.currentTurn,
+            ships: ships,
+            currentPlayerIndex: indexPlayer,
           }),
           id: 0,
-        }),
-      );
-    } else {
-      console.warn(`Player ${connectionId} is not registered`);
+        };
+
+        client.send(JSON.stringify(message));
+      }
     }
   });
+
+  console.log(`Game ${gameId} is ready to start. Messages sent to players.`);
 };
 
 export default startGame;

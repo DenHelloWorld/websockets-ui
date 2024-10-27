@@ -6,6 +6,7 @@ interface Player {
   connectionId: string;
   name: string;
   indexPlayer?: number | string;
+  room?: string;
 }
 
 export interface Ship {

@@ -1,19 +1,18 @@
 import WebSocket, { createWebSocketStream } from 'ws';
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 import handleMessage from '../commands/handleMessage';
 import updateRoom from '../commands/updateRoom';
 import sendUpdateWinners from '../commands/updateWinners';
-import { clients, registeredPlayers } from '../db/db';
-import { setStatus } from '../utils/setStatus';
-import { RoomOrRegMessage } from '../models/roomOrRegMessage';
+import { clients } from '../db/db';
 import { getWsServer } from '../utils/getWsServer';
+import processDisconnect from '../utils/removeOnDisconnect';
 
 const WS_SERVER = getWsServer();
 
-WS_SERVER.on('connection', function connection(ws: WebSocket) {
+WS_SERVER.on('connection', (ws: WebSocket) => {
   const connectionId = randomUUID();
   clients.set(connectionId, ws);
-  console.log('Client connected', connectionId);
+  console.warn('Client connected', connectionId);
 
   const duplex = createWebSocketStream(ws, { encoding: 'utf8' });
 
@@ -30,16 +29,9 @@ WS_SERVER.on('connection', function connection(ws: WebSocket) {
       console.error('Error in duplex.on.data', error);
     }
   });
-
-  ws.on('close', () => {
-    console.log('Client disconnected', connectionId);
+  ws.on('close', async () => {
+    console.log('Client disconnected via ws.close', connectionId);
+    await processDisconnect(connectionId);
     clients.delete(connectionId);
-    const closedPlayer = Object.keys(registeredPlayers).find(
-      name => (registeredPlayers[name].connectionId = connectionId),
-    );
-
-    if (closedPlayer) {
-      setStatus(registeredPlayers, closedPlayer, 'offline');
-    }
   });
 });

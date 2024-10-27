@@ -78,18 +78,7 @@ export interface AddShipsRequest {
 }
 export interface StartGameResponse {
   type: 'start_game';
-  data: {
-    ships: Array<{
-      position: {
-        x: number;
-        y: number;
-      };
-      direction: boolean;
-      length: number;
-      type: 'small' | 'medium' | 'large' | 'huge';
-    }>;
-    currentPlayerIndex: number | string;
-  };
+  data: string;
   id: number;
 }
 export interface AttackRequest {

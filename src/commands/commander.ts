@@ -2,6 +2,7 @@ import { WebSocketRequest } from '../models/req-res.types';
 import { WebSocket } from 'ws';
 import playerRegistration from './playerRegistration';
 import handleCreateRoom from './createRoom';
+import addUserToRoom from './addUserToRoom';
 
 const commander = (ws: WebSocket, message: WebSocketRequest, connectionId: string) => {
   switch (message.type) {
@@ -14,7 +15,7 @@ const commander = (ws: WebSocket, message: WebSocketRequest, connectionId: strin
       break;
 
     case 'add_user_to_room':
-      console.log('add_user_to_room', message);
+      addUserToRoom(ws, message, connectionId);
       break;
 
     default:

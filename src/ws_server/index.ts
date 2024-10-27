@@ -6,7 +6,6 @@ import sendUpdateWinners from '../commands/updateWinners';
 import { registeredPlayers } from '../db/db';
 import { setStatus } from '../utils/setStatus';
 import { Message } from '../models/commandMessage';
-import { Worker } from 'node:worker_threads';
 
 const WS_SERVER = new WebSocketServer({ port: 3000 });
 

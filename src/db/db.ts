@@ -14,6 +14,7 @@ export const winners: {
   wins: string;
 }[] = [];
 
-export const rooms: { [roomId: string]: { users: { name: string; index: string }[] } } = {};
-
+// export const rooms: { [roomId: string]: { users: { name: string; index: string }[] } } = {};
+type Room = { users: { name: string; index: string | number }[] };
+export const rooms: { [roomId: string]: Room } = {};
 // export const availableRooms: { [roomId: string]: { users: { name: string; index: string }[] } } = {};

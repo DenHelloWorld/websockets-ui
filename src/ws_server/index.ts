@@ -5,7 +5,7 @@ import updateRoom from '../commands/updateRoom';
 import sendUpdateWinners from '../commands/updateWinners';
 import { clients, registeredPlayers } from '../db/db';
 import { setStatus } from '../utils/setStatus';
-import { Message } from '../models/commandMessage';
+import { RoomOrRegMessage } from '../models/roomOrRegMessage';
 import { getWsServer } from '../utils/getWsServer';
 
 const WS_SERVER = getWsServer();
@@ -29,7 +29,7 @@ WS_SERVER.on('connection', function connection(ws: WebSocket) {
     } catch (error) {
       console.error('Error in duplex.on.data', error);
     }
-    process.on('message', async (message: Message) => {
+    process.on('message', async (message: RoomOrRegMessage) => {
       if (message.type) {
         console.log('Received command:', message.data);
       }
@@ -45,11 +45,6 @@ WS_SERVER.on('connection', function connection(ws: WebSocket) {
 
     if (closedPlayer) {
       setStatus(registeredPlayers, closedPlayer, 'offline');
-      console.log('registeredPlayers', registeredPlayers);
-      process.send?.({
-        type: 'players',
-        data: registeredPlayers,
-      });
     }
   });
 });

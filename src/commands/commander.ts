@@ -3,6 +3,7 @@ import { WebSocket } from 'ws';
 import handleCreateRoom from './createRoom';
 import handleAddUserToRoom from './handleAddUserToRoom';
 import handleReg from './handleReg';
+import handleAddShips from './handleAddShips';
 
 const commander = (ws: WebSocket, message: WebSocketRequest, connectionId: string) => {
   switch (message.type) {
@@ -15,11 +16,14 @@ const commander = (ws: WebSocket, message: WebSocketRequest, connectionId: strin
       break;
 
     case 'add_user_to_room':
-      handleAddUserToRoom(ws, message, connectionId);
+      handleAddUserToRoom(message, connectionId);
+      break;
+
+    case 'add_ships':
+      handleAddShips(ws, message, connectionId);
       break;
 
     default:
-      console.log(ws);
       console.error('Unknown request type:', message);
   }
 };

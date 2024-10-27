@@ -6,10 +6,29 @@ interface Player {
   connectionId: string;
   name: string;
 }
-interface Game {
-  idGame: string;
-  idPlayer: string;
+
+interface Ship {
+  position: {
+    x: number;
+    y: number;
+  };
+  direction: boolean;
+  length: number;
+  type: 'small' | 'medium' | 'large' | 'huge';
 }
+
+export interface Game {
+  beforeStartData?: {
+    idGame: string;
+    idPlayer: string;
+  };
+
+  addShipsData?: {
+    gameId: string | number;
+    ships: { [indexPlayer: string]: Ship[] };
+  };
+}
+
 export type Room = { users: { name: string; index: string | number }[] };
 
 export const registeredPlayers: {

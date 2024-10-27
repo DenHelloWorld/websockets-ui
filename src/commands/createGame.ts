@@ -1,7 +1,15 @@
 import { randomUUID } from 'crypto';
-import { clients, games, registeredPlayers, Room } from '../db/db';
+import { clients, Game, games, registeredPlayers, Room } from '../db/db';
 import { WebSocket } from 'ws';
 const createGame = (room: Room, gameId: string) => {
+  if (!games[gameId]) {
+    games[gameId] = {
+      beforeStartData: {
+        idGame: gameId,
+        idPlayer: '',
+      },
+    };
+  }
   room.users.forEach(user => {
     const player = registeredPlayers[user.name];
 
@@ -10,20 +18,19 @@ const createGame = (room: Room, gameId: string) => {
 
       if (client instanceof WebSocket) {
         const idPlayer = randomUUID();
+        const createGameData: Game['beforeStartData'] = {
+          idGame: gameId,
+          idPlayer: idPlayer,
+        };
+
         const gameMessage = {
           type: 'create_game',
-          data: JSON.stringify({
-            idGame: gameId,
-            idPlayer: idPlayer,
-          }),
+          data: JSON.stringify(createGameData),
           id: 0,
         };
 
         client.send(JSON.stringify(gameMessage));
-        games[gameId] = {
-          idGame: gameId,
-          idPlayer: idPlayer,
-        };
+        games[gameId].beforeStartData = createGameData;
         console.log(`Game started for player ${user.name} in game ${gameId}`);
       } else {
         console.warn(`WebSocket not found for player ${user.name}.`);

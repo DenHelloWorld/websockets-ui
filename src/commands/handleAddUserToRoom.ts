@@ -1,11 +1,10 @@
-import { WebSocket } from 'ws';
 import { WebSocketRequest } from '../models/req-res.types';
 import { rooms } from '../db/db';
 import findUserByConnectionId from '../utils/findUserByConnectionId';
 import { randomUUID } from 'node:crypto';
 import createGame from './createGame';
 
-const handleAddUserToRoom = (ws: WebSocket, message: WebSocketRequest, connectionId: string) => {
+const handleAddUserToRoom = (message: WebSocketRequest, connectionId: string) => {
   if (message.type !== 'add_user_to_room') {
     console.error('playerRegistration message.type !== add_user_to_room');
     return;

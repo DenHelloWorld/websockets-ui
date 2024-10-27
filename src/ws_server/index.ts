@@ -29,11 +29,6 @@ WS_SERVER.on('connection', function connection(ws: WebSocket) {
     } catch (error) {
       console.error('Error in duplex.on.data', error);
     }
-    process.on('message', async (message: RoomOrRegMessage) => {
-      if (message.type) {
-        console.log('Received command:', message.data);
-      }
-    });
   });
 
   ws.on('close', () => {

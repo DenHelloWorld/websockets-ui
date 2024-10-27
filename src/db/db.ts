@@ -5,9 +5,10 @@ interface Player {
   status: 'online' | 'offline';
   connectionId: string;
   name: string;
+  indexPlayer?: number | string;
 }
 
-interface Ship {
+export interface Ship {
   position: {
     x: number;
     y: number;
@@ -26,6 +27,12 @@ export interface Game {
   addShipsData?: {
     gameId: string | number;
     ships: { [indexPlayer: string]: Ship[] };
+  };
+
+  startGameData?: {
+    players: string[];
+    isReadyToStart: boolean;
+    currentTurn: string;
   };
 }
 

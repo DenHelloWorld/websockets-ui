@@ -19,7 +19,7 @@ const handleAddUserToRoom = (message: WebSocketRequest, connectionId: string) =>
   }
   const player = findUserByConnectionId(connectionId);
   if (player) {
-    room.users.push({ name: player.name, index: indexRoom });
+    room.users.push({ name: player.name, index: connectionId });
     console.log(`Added user to room ${indexRoom}:`, JSON.stringify(room, null, 2));
 
     if (room.users.length === 2) {

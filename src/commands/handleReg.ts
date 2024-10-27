@@ -2,7 +2,7 @@ import { registeredPlayers } from '../db/db';
 import { WebSocketRequest } from '../models/req-res.types';
 import { WebSocket } from 'ws';
 
-const playerRegistration = (ws: WebSocket, message: WebSocketRequest, connectionId: string) => {
+const handleReg = (ws: WebSocket, message: WebSocketRequest, connectionId: string) => {
   if (message.type !== 'reg') {
     console.error('playerRegistration message.type !== reg');
     return;
@@ -80,4 +80,4 @@ const playerRegistration = (ws: WebSocket, message: WebSocketRequest, connection
   });
 };
 
-export default playerRegistration;
+export default handleReg;

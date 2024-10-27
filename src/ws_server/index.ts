@@ -1,17 +1,19 @@
-import WebSocket, { WebSocketServer, createWebSocketStream } from 'ws';
+import WebSocket, { createWebSocketStream } from 'ws';
 import { randomUUID } from 'crypto';
 import handleMessage from '../commands/handleMessage';
 import updateRoom from '../commands/updateRoom';
 import sendUpdateWinners from '../commands/updateWinners';
-import { registeredPlayers } from '../db/db';
+import { clients, registeredPlayers } from '../db/db';
 import { setStatus } from '../utils/setStatus';
 import { Message } from '../models/commandMessage';
+import { getWsServer } from '../utils/getWsServer';
 
-const WS_SERVER = new WebSocketServer({ port: 3000 });
+const WS_SERVER = getWsServer();
 
 WS_SERVER.on('connection', function connection(ws: WebSocket) {
-  const uuid = randomUUID();
-  console.log('Client connected', uuid);
+  const connectionId = randomUUID();
+  clients.set(connectionId, ws);
+  console.log('Client connected', connectionId);
 
   const duplex = createWebSocketStream(ws, { encoding: 'utf8' });
 
@@ -21,7 +23,7 @@ WS_SERVER.on('connection', function connection(ws: WebSocket) {
 
   duplex.on('data', async data => {
     try {
-      await handleMessage(ws, data, uuid);
+      await handleMessage(ws, data, connectionId);
       await updateRoom(WS_SERVER);
       await sendUpdateWinners(WS_SERVER);
     } catch (error) {
@@ -35,9 +37,11 @@ WS_SERVER.on('connection', function connection(ws: WebSocket) {
   });
 
   ws.on('close', () => {
-    console.log('Client disconnected', uuid);
-
-    const closedPlayer = Object.keys(registeredPlayers).find(name => (registeredPlayers[name].connectionId = uuid));
+    console.log('Client disconnected', connectionId);
+    clients.delete(connectionId);
+    const closedPlayer = Object.keys(registeredPlayers).find(
+      name => (registeredPlayers[name].connectionId = connectionId),
+    );
 
     if (closedPlayer) {
       setStatus(registeredPlayers, closedPlayer, 'offline');

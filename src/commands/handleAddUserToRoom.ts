@@ -2,8 +2,10 @@ import { WebSocket } from 'ws';
 import { WebSocketRequest } from '../models/req-res.types';
 import { rooms } from '../db/db';
 import findUserByConnectionId from '../utils/findUserByConnectionId';
+import { randomUUID } from 'node:crypto';
+import createGame from './createGame';
 
-const addUserToRoom = (ws: WebSocket, message: WebSocketRequest, connectionId: string) => {
+const handleAddUserToRoom = (ws: WebSocket, message: WebSocketRequest, connectionId: string) => {
   if (message.type !== 'add_user_to_room') {
     console.error('playerRegistration message.type !== add_user_to_room');
     return;
@@ -20,11 +22,15 @@ const addUserToRoom = (ws: WebSocket, message: WebSocketRequest, connectionId: s
   if (player) {
     room.users.push({ name: player.name, index: indexRoom });
     console.log(`Added user to room ${indexRoom}:`, JSON.stringify(room, null, 2));
-    delete rooms[indexRoom];
+
+    if (room.users.length === 2) {
+      const gameId = randomUUID();
+      createGame(room, gameId);
+      delete rooms[indexRoom];
+    }
   } else {
     console.error(`Player with connectionId ${connectionId} does not exist`);
-    return;
   }
 };
 
-export default addUserToRoom;
+export default handleAddUserToRoom;

@@ -1,13 +1,13 @@
 import { WebSocketRequest } from '../models/req-res.types';
 import { WebSocket } from 'ws';
-import playerRegistration from './playerRegistration';
 import handleCreateRoom from './createRoom';
-import addUserToRoom from './addUserToRoom';
+import handleAddUserToRoom from './handleAddUserToRoom';
+import handleReg from './handleReg';
 
 const commander = (ws: WebSocket, message: WebSocketRequest, connectionId: string) => {
   switch (message.type) {
     case 'reg':
-      playerRegistration(ws, message, connectionId);
+      handleReg(ws, message, connectionId);
       break;
 
     case 'create_room':
@@ -15,7 +15,7 @@ const commander = (ws: WebSocket, message: WebSocketRequest, connectionId: strin
       break;
 
     case 'add_user_to_room':
-      addUserToRoom(ws, message, connectionId);
+      handleAddUserToRoom(ws, message, connectionId);
       break;
 
     default:

@@ -15,7 +15,6 @@ const startGame = (gameId: string | number) => {
   players.forEach(indexPlayer => {
     const player = findUserByIndexPlayer(indexPlayer);
     if (player) {
-      console.log('playerName', indexPlayer);
       const client = clients.get(player.connectionId);
       if (client) {
         const ships = game.addShipsData?.ships[indexPlayer];
@@ -33,8 +32,6 @@ const startGame = (gameId: string | number) => {
       }
     }
   });
-
-  console.log(`Game ${gameId} is ready to start. Messages sent to players.`);
 };
 
 export default startGame;
